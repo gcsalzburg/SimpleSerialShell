@@ -33,12 +33,11 @@ class SimpleSerialShell::Command {
             return compareName(otherNameString.c_str());
         };
 
-        int compareName(const String & aName) const
+        int compareName(const char * aName) const
         {
-            const String myName(name);
-	    auto len = aName.length() + 1; // for clean compare
-            int comparison =
-                strncasecmp(myName.c_str(), aName.c_str(), len);
+            const String myNameString(name);
+            auto len = myNameString.length() + 1; // for clean compare
+            int comparison = strncasecmp(myNameString.c_str(), aName, len);
             return comparison;
         };
 
