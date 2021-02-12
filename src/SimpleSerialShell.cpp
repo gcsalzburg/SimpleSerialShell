@@ -36,10 +36,7 @@ class SimpleSerialShell::Command {
         int compareName(const String & aName) const
         {
             const String myName(name);
-	    auto len = aName.length();
-            if (len < myName.length()) {
-                len = myName.length();
-            }
+	    auto len = aName.length() + 1; // for clean compare
             int comparison =
                 strncasecmp(myName.c_str(), aName.c_str(), len);
             return comparison;
