@@ -19,7 +19,7 @@
  */
 class SimpleSerialShell : public Stream {
     public:
-        SimpleSerialShell(void);
+        SimpleSerialShell(char * lineBuffer, int lineBufSize);
 
         // Unix-style (from 1970!)
         // functions must have a signature like: "int hello(int argc, char ** argv)"
@@ -61,7 +61,8 @@ class SimpleSerialShell : public Stream {
 
         int report(const __FlashStringHelper * message, int errorCode);
         static const char MAXARGS = 10;
-        char linebuffer[SIMPLE_SERIAL_SHELL_BUFSIZE];
+        char *linebuffer;
+	int bufferSize;
         int inptr;
 
         class Command;
@@ -69,6 +70,8 @@ class SimpleSerialShell : public Stream {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Recommended: just use the predefined default "shell"
+//
 extern SimpleSerialShell shell;
 
 //example commands which would be easy to add to the shell:

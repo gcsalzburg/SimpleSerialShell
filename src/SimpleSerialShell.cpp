@@ -9,8 +9,6 @@
  *
  */
 
-SimpleSerialShell shell;
-
 //
 SimpleSerialShell::Command * SimpleSerialShell::firstCommand = NULL;
 
@@ -37,8 +35,9 @@ class SimpleSerialShell::Command {
 
         int compareName(const char * aName) const
         {
-            const String myNameString(name);
-            int comparison = strncasecmp(myNameString.c_str(), aName, SIMPLE_SERIAL_SHELL_BUFSIZE);
+            const String myName(name);
+            int comparison =
+                strncasecmp(myName.c_str(), aName, myName.length());
             return comparison;
         };
 
@@ -48,9 +47,11 @@ class SimpleSerialShell::Command {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-SimpleSerialShell::SimpleSerialShell()
+SimpleSerialShell::SimpleSerialShell(char *inputLine, int bufSize)
     : shellConnection(NULL),
-      m_lastErrNo(EXIT_SUCCESS)
+      m_lastErrNo(EXIT_SUCCESS),
+      linebuffer(inputLine),
+      bufferSize(bufSize)
 {
     resetBuffer();
 
@@ -160,7 +161,7 @@ bool SimpleSerialShell::prepInput(void)
                 // Otherwise, echo the character and append it to the buffer
                 linebuffer[inptr++] = c;
                 write(c);
-                if (inptr >= SIMPLE_SERIAL_SHELL_BUFSIZE-1) {
+                if (inptr >= bufferSize-1) {
                     bufferReady = true; // flush to avoid overflow
                 }
                 break;
@@ -174,7 +175,7 @@ bool SimpleSerialShell::prepInput(void)
 int SimpleSerialShell::execute(const char commandString[])
 {
     // overwrites anything in linebuffer; hope you don't need it!
-    strncpy(linebuffer, commandString, SIMPLE_SERIAL_SHELL_BUFSIZE);
+    strncpy(linebuffer, commandString, bufferSize);
     return execute();
 }
 
@@ -182,7 +183,7 @@ int SimpleSerialShell::execute(const char commandString[])
 int SimpleSerialShell::execute(void)
 {
     char * argv[MAXARGS] = {0};
-    linebuffer[SIMPLE_SERIAL_SHELL_BUFSIZE - 1] = '\0'; // play it safe
+    linebuffer[bufferSize - 1] = '\0'; // play it safe
     int argc = 0;
 
     char * rest = NULL;
@@ -255,7 +256,7 @@ int SimpleSerialShell::report(const __FlashStringHelper * constMsg, int errorCod
 //////////////////////////////////////////////////////////////////////////////
 void SimpleSerialShell::resetBuffer(void)
 {
-    memset(linebuffer, 0, sizeof(linebuffer));
+    memset(linebuffer, 0, bufferSize);
     inptr = 0;
 }
 
@@ -263,7 +264,9 @@ void SimpleSerialShell::resetBuffer(void)
 // SimpleSerialShell::printHelp() is a static method.
 // printHelp() can access the linked list of commands.
 //
-int SimpleSerialShell::printHelp(int argc, char **argv)
+int SimpleSerialShell::printHelp(
+    int __attribute__((unused)) argc,
+    char __attribute__((unused)) **argv)
 {
     shell.println(F("Commands available are:"));
     auto aCmd = firstCommand;  // first in list of commands.
@@ -273,7 +276,7 @@ int SimpleSerialShell::printHelp(int argc, char **argv)
         shell.println(aCmd->name);
         aCmd = aCmd->next;
     }
-    return 0;	// OK or "no errors"
+    return 0;    // OK or "no errors"
 }
 
 ///////////////////////////////////////////////////////////////
