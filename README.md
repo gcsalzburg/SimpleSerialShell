@@ -33,7 +33,7 @@ setup()
 Name the command and add it to the shell:
 ```cpp
   ...
-  shell.addCommand(F("sayHello"),helloWorld);
+  shell.addCommand(F("sayHello"),helloWorld,F("Says hello when called"));
   ...
 ```
 
@@ -63,7 +63,7 @@ Useful if you forgot what was loaded on this board.
 * "help" is a built-in command.  It lists what is available.
 
 * RAM is limited in the ATMega world.  To save space, use the F() macro, which keeps const strings in flash
-rather than copying them to RAM.  (For example use `shell.addCommand(F("helloWorld"), hello);` )
+rather than copying them to RAM.  (For example use `shell.addCommand(F("helloWorld"), hello, F("says hello"));` )
 
 * Since the shell delegates the actual communication to what it connects to
 (with shell.attach()), it can work with Serial, Serial2, SoftwareSerial or

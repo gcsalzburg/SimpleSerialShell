@@ -20,8 +20,8 @@ SimpleSerialShell::Command * SimpleSerialShell::firstCommand = NULL;
  */
 class SimpleSerialShell::Command {
     public:
-        Command(const __FlashStringHelper * n, CommandFunction f):
-            name(n), myFunc(f) {};
+        Command(const __FlashStringHelper * n, CommandFunction f, const __FlashStringHelper * d):
+            name(n), myFunc(f), description(d) {};
 
         int execute(int argc, char **argv)
         {
@@ -44,6 +44,7 @@ class SimpleSerialShell::Command {
 
         const __FlashStringHelper * name;
         CommandFunction myFunc;
+        const __FlashStringHelper * description;
         Command * next;
 };
 
@@ -55,14 +56,14 @@ SimpleSerialShell::SimpleSerialShell()
     resetBuffer();
 
     // simple help.
-    addCommand(F("help"), SimpleSerialShell::printHelp);
+    addCommand(F("help"), SimpleSerialShell::printHelp, F("List all options"));
 };
 
 //////////////////////////////////////////////////////////////////////////////
 void SimpleSerialShell::addCommand(
-    const __FlashStringHelper * name, CommandFunction f)
+    const __FlashStringHelper * name, CommandFunction f, const __FlashStringHelper * description)
 {
-    auto * newCmd = new Command(name, f);
+    auto * newCmd = new Command(name, f, description);
 
     // insert in list alphabetically
     // from stackoverflow...
@@ -265,12 +266,14 @@ void SimpleSerialShell::resetBuffer(void)
 //
 int SimpleSerialShell::printHelp(int argc, char **argv)
 {
-    shell.println(F("Commands available are:"));
+    shell.println(F("Available options:"));
     auto aCmd = firstCommand;  // first in list of commands.
     while (aCmd)
     {
         shell.print(F("  "));
-        shell.println(aCmd->name);
+        shell.print(aCmd->name);
+        shell.print(F(" - "));
+        shell.println(aCmd->description);
         aCmd = aCmd->next;
     }
     return 0;	// OK or "no errors"
