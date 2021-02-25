@@ -97,6 +97,7 @@ bool SimpleSerialShell::executeIfInput(void)
 void SimpleSerialShell::attach(Stream & requester)
 {
     shellConnection = &requester;
+    resetBuffer(); // Added here to show the IM> prompt when shell initiates
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -193,7 +194,6 @@ int SimpleSerialShell::execute(void)
     if (!commandName)
     {
         // empty line; no arguments found.
-        println(F("OK"));
         resetBuffer();
         return EXIT_SUCCESS;
     }
@@ -258,6 +258,7 @@ void SimpleSerialShell::resetBuffer(void)
 {
     memset(linebuffer, 0, sizeof(linebuffer));
     inptr = 0;
+    print(F("IM> "));
 }
 
 //////////////////////////////////////////////////////////////////////////////
