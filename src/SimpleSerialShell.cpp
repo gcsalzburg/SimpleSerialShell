@@ -210,7 +210,7 @@ int SimpleSerialShell::execute(void)
         }
     }
 
-    return report(F("Too many arguments to parse"), -1);
+    return report(F("Error: Too many arguments"), -1);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -224,7 +224,7 @@ int SimpleSerialShell::execute(int argc, char **argv)
             return m_lastErrNo;
         }
     }
-    print(F("\""));
+    print(F("Error: \""));
     print(argv[0]);
     print(F("\": "));
 
@@ -243,9 +243,7 @@ int SimpleSerialShell::report(const __FlashStringHelper * constMsg, int errorCod
     if (errorCode != EXIT_SUCCESS)
     {
         String message(constMsg);
-        print(errorCode);
         if (message[0] != '\0') {
-            print(F(": "));
             println(message);
         }
     }
